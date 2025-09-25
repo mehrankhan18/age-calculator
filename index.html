@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronos - Professional Age Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            z-index: 1;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, #fdbb2d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            font-weight: 300;
+        }
+
+        .calculator-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .date-input:focus {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 0 2px rgba(253, 187, 45, 0.5);
+        }
+
+        .date-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(to right, #fdbb2d, #b21f1f);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(178, 31, 31, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(178, 31, 31, 0.6);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .result-title {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+            color: #fdbb2d;
+        }
+
+        .age-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .age-number {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, #fff, #fdbb2d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .age-label {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .detailed-results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .detail-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .detail-box:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .detail-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fdbb2d;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .animation-area {
+            height: 120px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .animation-object {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #fdbb2d, #b21f1f);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-card {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calculator"></i> Chronos Age Calculator</h1>
+            <p class="subtitle">Discover your exact age with precision and style</p>
+        </header>
+        
+        <div class="calculator-card">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="birthdate"><i class="far fa-calendar-alt"></i> Select Your Birthdate</label>
+                    <input type="date" id="birthdate" class="date-input" max="">
+                </div>
+                
+                <div class="input-group">
+                    <label for="compare-date"><i class="fas fa-calendar-day"></i> Compare To (Optional)</label>
+                    <input type="date" id="compare-date" class="date-input">
+                </div>
+                
+                <button id="calculate" class="calculate-btn">
+                    <i class="fas fa-calculator"></i> Calculate Age
+                </button>
+                
+                <div class="animation-area" id="animation-area">
+                    <!-- GSAP animation objects will be added here -->
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <h2 class="result-title">Your Age Results</h2>
+                
+                <div class="age-display">
+                    <div class="age-number" id="age-years">--</div>
+                    <div class="age-label">Years Old</div>
+                </div>
+                
+                <div class="detailed-results">
+                    <div class="detail-box">
+                        <div class="detail-value" id="age-months">--</div>
+                        <div class="detail-label">Months</div>
+                    </div>
+                    
+                    <div class="detail-box">
+                        <div class="detail-value" id="age-days">--</div>
+                        <div class="detail-label">Days</div>
+                    </div>
+                    
+                    <div class="detail-box">
+                        <div class="detail-value" id="age-weeks">--</div>
+                        <div class="detail-label">Weeks</div>
+                    </div>
+                    
+                    <div class="detail-box">
+                        <div class="detail-value" id="age-hours">--</div>
+                        <div class="detail-label">Hours</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Chronos Age Calculator &copy; 2023 | Precision Time Measurement</p>
+        </footer>
+    </div>
+
+    <script>
+        // Set max date to today for both date inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('birthdate').setAttribute('max', today);
+            document.getElementById('compare-date').setAttribute('max', today);
+            
+            // Initialize particles.js
+            particlesJS("particles-js", {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: "#ffffff" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#ffffff",
+                        opacity: 0.2,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "repulse" },
+                        onclick: { enable: true, mode: "push" },
+                        resize: true
+                    }
+                },
+                retina_detect: true
+            });
+            
+            // Initial animation
+            gsap.from(".container", { duration: 1, y: 50, opacity: 0, ease: "power3.out" });
+            gsap.from("h1", { duration: 1, y: -30, opacity: 0, delay: 0.3, ease: "back.out(1.7)" });
+            gsap.from(".input-section", { duration: 0.8, x: -50, opacity: 0, delay: 0.5, ease: "power2.out" });
+            gsap.from(".result-section", { duration: 0.8, x: 50, opacity: 0, delay: 0.7, ease: "power2.out" });
+            
+            // Create floating animation objects
+            createAnimationObjects();
+        });
+        
+        // Create floating objects for animation
+        function createAnimationObjects() {
+            const area = document.getElementById('animation-area');
+            const symbols = ['📅', '⏳', '📆', '🎂', '⌛', '🎁', '⭐'];
+            
+            for (let i = 0; i < 7; i++) {
+                const obj = document.createElement('div');
+                obj.className = 'animation-object';
+                obj.textContent = symbols[i];
+                obj.style.left = `${Math.random() * 90}%`;
+                obj.style.top = `${Math.random() * 70}%`;
+                area.appendChild(obj);
+                
+                // GSAP animation for each object
+                gsap.to(obj, {
+                    y: Math.random() > 0.5 ? 80 : -80,
+                    x: Math.random() > 0.5 ? 30 : -30,
+                    rotation: Math.random() * 360,
+                    duration: 3 + Math.random() * 4,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut",
+                    delay: Math.random() * 2
+                });
+            }
+        }
+        
+        // Calculate age when button is clicked
+        document.getElementById('calculate').addEventListener('click', function() {
+            const birthdate = document.getElementById('birthdate').value;
+            const compareDate = document.getElementById('compare-date').value || new Date().toISOString().split('T')[0];
+            
+            if (!birthdate) {
+                alert('Please select your birthdate');
+                return;
+            }
+            
+            // Calculate age using moment.js
+            const birthMoment = moment(birthdate);
+            const compareMoment = moment(compareDate);
+            
+            const years = compareMoment.diff(birthMoment, 'years');
+            const months = compareMoment.diff(birthMoment, 'months') % 12;
+            const days = compareMoment.diff(birthMoment.add(years, 'years').add(months, 'months'), 'days');
+            const weeks = Math.floor(compareMoment.diff(birthMoment, 'days') / 7);
+            const hours = compareMoment.diff(birthMoment, 'hours');
+            
+            // Animate the results
+            animateValue('age-years', 0, years, 1500);
+            animateValue('age-months', 0, months, 1500);
+            animateValue('age-days', 0, days, 1500);
+            animateValue('age-weeks', 0, weeks, 1500);
+            animateValue('age-hours', 0, hours, 1500);
+            
+            // Add celebration animation if it's a birthday
+            if (birthMoment.format('MM-DD') === compareMoment.format('MM-DD')) {
+                celebrateBirthday();
+            }
+        });
+        
+        // Function to animate number values
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                obj.innerHTML = value.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+            
+            // Add GSAP animation to the element
+            gsap.fromTo(`#${id}`, 
+                { scale: 0.5, opacity: 0 }, 
+                { scale: 1, opacity: 1, duration: 0.8, ease: "elastic.out(1, 0.5)" }
+            );
+        }
+        
+        // Special animation for birthdays
+        function celebrateBirthday() {
+            const container = document.querySelector('.container');
+            
+            // Create confetti elements
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.innerHTML = ['🎉', '🎊', '🥳', '🎂', '🎁'][Math.floor(Math.random() * 5)];
+                confetti.style.position = 'absolute';
+                confetti.style.fontSize = '24px';
+                confetti.style.zIndex = '1000';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-30px';
+                container.appendChild(confetti);
+                
+                // Animate confetti
+                gsap.to(confetti, {
+                    y: window.innerHeight + 30,
+                    rotation: Math.random() * 360,
+                    duration: 2 + Math.random() * 2,
+                    ease: "power1.out",
+                    onComplete: () => confetti.remove()
+                });
+            }
+            
+            // Animate the age display
+            gsap.to('.age-number', {
+                scale: 1.2,
+                color: '#ffd700',
+                duration: 0.5,
+                yoyo: true,
+                repeat: 3,
+                ease: "power1.inOut"
+            });
+            
+            // Play a subtle pulse animation on the container
+            gsap.to('.container', {
+                boxShadow: '0 0 30px rgba(255, 215, 0, 0.7)',
+                duration: 0.5,
+                yoyo: true,
+                repeat: 3,
+                ease: "power1.inOut"
+            });
+        }
+    </script>
+</body>
+</html>
